@@ -1,5 +1,5 @@
-import { getProjects } from "@/api/projectAPI";
-import { useQuery } from "@tanstack/react-query";
+import { deleteProject, getProjects } from "@/api/projectAPI";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Fragment } from "react";
 import {
@@ -10,11 +10,25 @@ import {
   Transition,
 } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
+import { toast } from "react-toastify";
 
 export default function DashboardView() {
   const { data, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: getProjects,
+  });
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: deleteProject,
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      toast.success(data.message);
+    },
   });
 
   if (isLoading) return "Cargando...";
@@ -54,7 +68,7 @@ export default function DashboardView() {
                       {project.projectName}
                     </Link>
                     <p className="text-sm text-gray-400">
-                      Cliente: {project.clientName}
+                      Cliente: <span className="font-bold">{project.clientName}</span>
                     </p>
                     <p className="text-sm text-gray-400">
                       {project.description}
@@ -100,7 +114,9 @@ export default function DashboardView() {
                           <button
                             type="button"
                             className="block px-3 py-1 text-sm leading-6 text-red-500"
-                            onClick={() => {}}
+                            onClick={() => {
+                              mutate(project._id);
+                            }}
                           >
                             Eliminar Proyecto
                           </button>
