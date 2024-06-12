@@ -30,6 +30,9 @@ export const taskStatusSchema = z.enum([
   "inProgress",
   "underReview",
 ]);
+
+export type TaskStatus = z.infer<typeof taskStatusSchema>;
+
 export const taskSchema = z.object({
   _id: z.string(),
   name: z.string(),
@@ -37,7 +40,7 @@ export const taskSchema = z.object({
   project: z.string(),
   status: taskStatusSchema,
   createdAt: z.string(),
-  updatedAt: z.string()
+  updatedAt: z.string(),
 });
 
 export type Task = z.infer<typeof taskSchema>;

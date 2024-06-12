@@ -6,6 +6,7 @@ type TaskApi = {
   formData: TaskFormData;
   projectId: Project["_id"];
   taskId: Task["_id"];
+  status: Task["status"];
 };
 
 export async function createTask({
@@ -61,6 +62,22 @@ export async function deleteTask({
   try {
     const url = `/projects/${projectId}/tasks/${taskId}`;
     const { data } = await api.delete(url);
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error);
+    } else throw new Error("Error interno. Intente más tarde.");
+  }
+}
+
+export async function updateStatus({
+  projectId,
+  taskId,
+  status,
+}: Pick<TaskApi, "projectId" | "taskId" | "status">) {
+  try {
+    const url = `/projects/${projectId}/tasks/${taskId}/status`;
+    const { data } = await api.patch(url, {status});
     return data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
