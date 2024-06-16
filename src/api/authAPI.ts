@@ -6,6 +6,7 @@ import {
   RequestConfirmationCodeForm,
   UserLoginForm,
   UserRegistrationForm,
+  userSchema,
 } from "../types";
 import { isAxiosError } from "axios";
 
@@ -47,6 +48,7 @@ export async function requestConfirmationCode(
 export async function authenticateUser(formData: UserLoginForm) {
   try {
     const { data } = await api.post("/auth/login", formData);
+    localStorage.setItem("AUTH_TOKEN", data.token);
     return data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
@@ -87,6 +89,18 @@ export async function updatePasswordWithToken({
   try {
     const { data } = await api.post(`/auth/update-password/${token}`, formData);
     return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error);
+    } else throw new Error("Error interno. Intente más tarde.");
+  }
+}
+
+export async function getUser() {
+  try {
+    const { data } = await api("/auth/user");
+    const response = userSchema.safeParse(data);
+    if (response.success) return response.data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
       throw new Error(error.response.data.error);
