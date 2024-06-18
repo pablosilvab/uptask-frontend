@@ -1,5 +1,6 @@
 import api from "@/lib/axios";
 import {
+  CheckPasswordForm,
   ConfirmToken,
   ForgotPasswordForm,
   NewPasswordForm,
@@ -101,6 +102,17 @@ export async function getUser() {
     const { data } = await api("/auth/user");
     const response = userSchema.safeParse(data);
     if (response.success) return response.data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error);
+    } else throw new Error("Error interno. Intente más tarde.");
+  }
+}
+
+export async function checkPassword(formData: CheckPasswordForm) {
+  try {
+    const { data } = await api.post("/auth/check-password", formData);
+    return data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {
       throw new Error(error.response.data.error);
