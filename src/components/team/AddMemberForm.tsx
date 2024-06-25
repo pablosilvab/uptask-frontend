@@ -26,6 +26,7 @@ export default function AddMemberForm() {
   const mutation = useMutation({
     mutationFn: findUserByEmail,
     onError: (error, variables) => {
+      console.log(error);
       setNotFoundEmail(variables.formData.email);
     },
   });
