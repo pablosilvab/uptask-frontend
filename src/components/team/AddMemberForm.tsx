@@ -5,6 +5,8 @@ import ErrorMessage from "../ErrorMessage";
 import { TeamMemberForm } from "@/types/index";
 import { findUserByEmail } from "@/api/teamAPI";
 import SearchResult from "./SearchResult";
+import SendInvitation from "./SendInvitation";
+import { useState } from "react";
 
 export default function AddMemberForm() {
   const initialValues: TeamMemberForm = {
@@ -12,6 +14,7 @@ export default function AddMemberForm() {
   };
   const params = useParams();
   const projectId = params.projectId!;
+  const [notFoundEmail, setNotFoundEmail] = useState<string | null>(null);
 
   const {
     register,
@@ -22,6 +25,9 @@ export default function AddMemberForm() {
 
   const mutation = useMutation({
     mutationFn: findUserByEmail,
+    onError: (error, variables) => {
+      setNotFoundEmail(variables.formData.email);
+    },
   });
 
   const handleSearchUser = async (formData: TeamMemberForm) => {
@@ -42,11 +48,11 @@ export default function AddMemberForm() {
         noValidate
       >
         <div className="flex flex-col gap-3">
-          <label className="font-normal text-2xl" htmlFor="name">
+          <label className="font-normal text-2xl" htmlFor="email">
             E-mail de Usuario
           </label>
           <input
-            id="name"
+            id="email"
             type="text"
             placeholder="E-mail del usuario a Agregar"
             className="w-full p-3  border-gray-300 border"
@@ -71,9 +77,15 @@ export default function AddMemberForm() {
       <div className="mt-10">
         {mutation.isPending && <p className="text-center">Cargando...</p>}
         {mutation.error && (
-          <p className="text-center">{mutation.error.message}</p>
+          <SendInvitation
+            email={notFoundEmail!}
+            projectId={projectId}
+            reset={resetData}
+          />
         )}
-        {mutation.data && <SearchResult user={mutation.data} reset={resetData}/>}
+        {mutation.data && (
+          <SearchResult user={mutation.data} reset={resetData} />
+        )}
       </div>
     </>
   );

@@ -16,6 +16,8 @@ import ProfileView from "./views/profile/ProfileView";
 import ChangePasswordView from "./views/profile/ChangePasswordView";
 import ProfileLayout from "./layouts/ProfileLayout";
 import NotFound from "./views/404/NotFound";
+import JoinByInvitationView from "./views/auth/JoinByInvitationView";
+import CompleteAccountView from "./views/auth/CompleteAccountView";
 
 export default function Router() {
   return (
@@ -41,6 +43,12 @@ export default function Router() {
         <Route element={<AuthLayout />}>
           <Route path="/auth/login" element={<LoginView />} index />
           <Route path="/auth/register" element={<RegisterView />} index />
+          <Route path="/auth/join" element={<JoinByInvitationView />} index />
+          <Route
+            path="/auth/complete-account"
+            element={<CompleteAccountView />}
+            index
+          />
           <Route
             path="/auth/confirm-account"
             element={<ConfirmAccountView />}

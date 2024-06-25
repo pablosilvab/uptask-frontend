@@ -4,6 +4,7 @@ import {
   Project,
   TeamMember,
   TeamMemberForm,
+  UserRegistrationForm,
   teamMembersSchema,
 } from "../types";
 
@@ -68,6 +69,39 @@ export async function removeUserFromProject({
   try {
     const url = `/projects/${projectId}/team/${userId}`;
     const { data } = await api.delete(url);
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error);
+    } else throw new Error("Error interno. Intente más tarde.");
+  }
+}
+
+export async function inviteUserToUpTask({
+  projectId,
+  email,
+}: {
+  projectId: Project["_id"];
+  email: TeamMember["email"];
+}) {
+  try {
+    const url = `/projects/${projectId}/team/invite`;
+    console.log(url);
+
+    const { data } = await api.post(url, { email });
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.error);
+    } else throw new Error("Error interno. Intente más tarde.");
+  }
+}
+
+export async function completeAccount(formData: UserRegistrationForm) {
+  try {
+    console.log(formData);
+    
+    const { data } = await api.post("/auth/team/confirm", formData);
     return data;
   } catch (error) {
     if (isAxiosError(error) && error.response) {

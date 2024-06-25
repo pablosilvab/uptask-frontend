@@ -1,14 +1,17 @@
-import { confirmAccount } from "@/api/authAPI";
-import { ConfirmToken } from "@/types/index";
-import { PinInput, PinInputField } from "@chakra-ui/pin-input";
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { PinInput, PinInputField } from "@chakra-ui/pin-input";
+import { useState } from "react";
+import { ConfirmToken } from "@/types/index";
+import { useMutation } from "@tanstack/react-query";
+import { confirmAccount } from "@/api/authAPI";
 import { toast } from "react-toastify";
 
-export default function ConfirmAccountView() {
-  const navigate = useNavigate()
+export default function JoinByInvitationView() {
+  const navigate = useNavigate();
+
   const [token, setToken] = useState<ConfirmToken["token"]>("");
+
+
 
   const { mutate } = useMutation({
     mutationFn: confirmAccount,
@@ -17,7 +20,7 @@ export default function ConfirmAccountView() {
     },
     onSuccess: (data) => {
       toast.success(data.message);
-      navigate("/auth/login")
+      navigate("/auth/complete-account", { state: { user: data.user } }); 
     },
   });
 
